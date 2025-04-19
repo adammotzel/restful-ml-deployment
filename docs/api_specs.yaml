@@ -1,0 +1,258 @@
+components:
+  schemas:
+    HealthCheck:
+      description: Health check response.
+      properties:
+        status:
+          const: active
+          title: Status
+          type: string
+      required:
+      - status
+      title: HealthCheck
+      type: object
+    ModelFeatures:
+      additionalProperties: false
+      description: Model features.
+      properties:
+        mean_area:
+          items:
+            type: number
+          title: Mean Area
+          type: array
+        mean_compactness:
+          items:
+            type: number
+          title: Mean Compactness
+          type: array
+        mean_concave_points:
+          items:
+            type: number
+          title: Mean Concave Points
+          type: array
+        mean_concavity:
+          items:
+            type: number
+          title: Mean Concavity
+          type: array
+        mean_fractal_dimension:
+          items:
+            type: number
+          title: Mean Fractal Dimension
+          type: array
+        mean_perimeter:
+          items:
+            type: number
+          title: Mean Perimeter
+          type: array
+        mean_radius:
+          items:
+            type: number
+          title: Mean Radius
+          type: array
+        mean_smoothness:
+          items:
+            type: number
+          title: Mean Smoothness
+          type: array
+        mean_symmetry:
+          items:
+            type: number
+          title: Mean Symmetry
+          type: array
+        mean_texture:
+          items:
+            type: number
+          title: Mean Texture
+          type: array
+      required:
+      - mean_radius
+      - mean_texture
+      - mean_perimeter
+      - mean_area
+      - mean_smoothness
+      - mean_compactness
+      - mean_concavity
+      - mean_concave_points
+      - mean_symmetry
+      - mean_fractal_dimension
+      title: ModelFeatures
+      type: object
+    ModelRequest:
+      additionalProperties: false
+      description: Base API request.
+      properties:
+        data:
+          $ref: '#/components/schemas/ModelFeatures'
+        identifier:
+          items:
+            type: string
+          title: Identifier
+          type: array
+      required:
+      - identifier
+      - data
+      title: ModelRequest
+      type: object
+    ModelResponse:
+      description: Base model response.
+      properties:
+        identifier:
+          items:
+            type: string
+          title: Identifier
+          type: array
+        predictions:
+          items:
+            type: number
+          title: Predictions
+          type: array
+      required:
+      - identifier
+      - predictions
+      title: ModelResponse
+      type: object
+    ServerErrorResponse:
+      description: Custom server error response.
+      properties:
+        detail:
+          const: Internal server error occured.
+          title: Detail
+          type: string
+      required:
+      - detail
+      title: ServerErrorResponse
+      type: object
+    UnauthorizedErrorResponse:
+      description: Custom unauthorized error response.
+      properties:
+        detail:
+          const: Invalid credentials.
+          title: Detail
+          type: string
+      required:
+      - detail
+      title: UnauthorizedErrorResponse
+      type: object
+    ValidationErrorDetail:
+      description: Validation error object.
+      properties:
+        error_message:
+          title: Error Message
+          type: string
+        expected_type:
+          title: Expected Type
+        field_name:
+          title: Field Name
+          type: string
+        value_received:
+          title: Value Received
+      required:
+      - field_name
+      - error_message
+      - value_received
+      - expected_type
+      title: ValidationErrorDetail
+      type: object
+    ValidationErrorResponse:
+      description: Custom format for validation error responses.
+      properties:
+        detail:
+          const: Validation error
+          title: Detail
+          type: string
+        errors:
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
+          title: Errors
+          type: array
+      required:
+      - detail
+      - errors
+      title: ValidationErrorResponse
+      type: object
+  securitySchemes:
+    HTTPBasic:
+      scheme: basic
+      type: http
+info:
+  summary: Returns predicted probabilities.
+  title: Logistic Regression Model
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /check:
+    get:
+      description: Check if the server is running.
+      operationId: check_check_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
+          description: Successful Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorResponse'
+          description: Unauthorized
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+          description: Internal Server Error
+      security:
+      - HTTPBasic: []
+      summary: Check
+      tags:
+      - Endpoints
+  /inference:
+    post:
+      description: "Perform model inference on input data. Inference can be performed\
+        \ on \nmultiple observations in a single request."
+      operationId: inference_inference_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelResponse'
+          description: Successful Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorResponse'
+          description: Unauthorized
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorResponse'
+          description: Internal Server Error
+      security:
+      - HTTPBasic: []
+      summary: Inference
+      tags:
+      - Endpoints

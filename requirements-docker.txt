@@ -1,0 +1,8 @@
+git+https://github.com/adammotzel/glms.git
+fastapi>=0.115.11
+pydantic>=2.10.6
+uvicorn>=0.34.0
+PyYAML>=6.0.2
+python-dotenv>=1.0.1
+pandas>=2.2.3
+numpy>=2.2.3
