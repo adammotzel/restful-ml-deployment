@@ -46,7 +46,8 @@ To get started, follow these steps:
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/adammotzel/ml-api-deployment
+   git clone https://github.com/adammotzel/restful-ml-deployment.git
+   cd restful-ml-deployment
    ```
 
 2. **Create a Virtual Environment**:
