@@ -112,7 +112,7 @@ The app leverages a few custom classes designed to support its functionality:
 2. **`src.clients.DataCollectionClient`**  
    This class is responsible for collecting input data and model predictions. It writes this information to CSV files in the `data/monitoring/` directory. The collected data is useful for model monitoring and performance analysis.
 
-   In `app.py`, data is collected by the `DataCaptureClient` using a `ThreadPoolExecutor` instance with a single worker. We use a single worker to force all data collection operations to occur within a single, separate thread, avoiding concurrency issues when writing data to disk. NOTE: Using a single worker probably isn't feasible for large applications; but for this demonstration it is sufficient.
+   In `app.py`, data is collected by the `DataCaptureClient` using a `ThreadPoolExecutor` instance with a single worker. We use a single worker to force all data collection operations to occur within a single, separate thread, avoiding concurrency issues when writing data to disk (this is a "fire-and-forget" pattern). NOTE: Using a single worker isn't feasible for large applications, but for this demonstration it is sufficient.
 
 3. **`src.clients.LoggingClient`**  
    The `LoggingClient` class abstracts the logging configuration, providing a simple interface for adding logging statements throughout the application code. This helps ensure consistent logging practices. 
@@ -146,13 +146,13 @@ By default, the app will not run out-of-the-box after cloning the repository bec
 
 ## Running the App Using Docker
 
-In the project root directory, a `Dockerfile` is included to containerize the app. Instead of using `venv`, you can build the Docker image and run the container directly:
+In the project root directory, a `Dockerfile` is included to containerize the app. Instead of using `venv`, you can build the Docker image and run the container directly by executing the following commands from the project root directory:
 
 ```bash
 docker build -t fastapi-app .
 ```
 ```bash
-docker container run --name fastapi-container -p 8000:8000 fastapi-app
+docker container run --name fastapi-container --mount type=bind,source=$PWD/data,target=/app -p 8000:8000 fastapi-app
 ```
 
 **A few important notes about the Docker approach:**
