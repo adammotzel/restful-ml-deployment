@@ -152,7 +152,7 @@ In the project root directory, a `Dockerfile` is included to containerize the ap
 docker build -t fastapi-app .
 ```
 ```bash
-docker container run --name fastapi-container --mount type=bind,source=$PWD/data,target=/app -p 8000:8000 fastapi-app
+docker container run --name fastapi-container --mount type=bind,source=$PWD/data,target=/app/data -p 8000:8000 fastapi-app
 ```
 
 **A few important notes about the Docker approach:**
