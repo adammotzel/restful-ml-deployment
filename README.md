@@ -162,7 +162,7 @@ docker container run --name fastapi-container --mount type=bind,source=$PWD/data
 3. By default, the `SERVER_PORT` env variable is set to `8000`. If you want to change the port, you can edit the Dockerfile.
 4. When running the container, you need to map a port on your host machine to the port exposed in the Docker container. In this example, both are set to port `8000`. This is accomplished via `-p 8000:8000` in the `run` command. 
 5. You still need to execute the `/notebooks/train.ipynb` notebook to fit and save the model object before running the app.
-6. The app logs and captured request data/predictions are not stored outside of the container. If you want to store this data you can bind mount the `logs/` and `data/` directories when running the container. However, because the logging client uses a `StreamHandler`, you can still view the app logs in the container logs. 
+6. The Docker `run` command will bind mount the `data/` directory, so all logs and monitoring data will be retained outside of the container. 
 
 
 ## API Documentation
