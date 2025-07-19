@@ -20,8 +20,6 @@ from src.model import ModelWrapper
 from src.clients import DataCollectionClient, LoggingClient
 
 
-fitted_model = ModelWrapper(path="models/model.pkl")
-
 _logging_client = LoggingClient(
     name=__file__,
     storage_dir="data/logs",
@@ -29,8 +27,10 @@ _logging_client = LoggingClient(
 )
 logger = _logging_client.logger
 
+model = ModelWrapper(path="models/model.pkl")
+
 data_client = DataCollectionClient(
-    columns=fitted_model.feature_names + [
+    columns=model.feature_names + [
         "prediction", 
         "identifier", 
         "request_time",
@@ -39,12 +39,12 @@ data_client = DataCollectionClient(
     logger=logger
 )
 
+data_collection_executor = ThreadPoolExecutor(max_workers=1)
+
 load_dotenv()
 
-correct_username = os.environ["AUTH_UN"]
-correct_password = os.environ["AUTH_PW"]
+CORRECT_USERNAME = os.environ["AUTH_UN"]
+CORRECT_PASSWORD = os.environ["AUTH_PW"]
 
-server = os.getenv("SERVER_IP", "127.0.0.1")
-port = os.getenv("SERVER_PORT", 8000)
-
-data_collection_executor = ThreadPoolExecutor(max_workers=1)
+HOST = os.getenv("SERVER_IP", "127.0.0.1")
+PORT = os.getenv("SERVER_PORT", 8000)

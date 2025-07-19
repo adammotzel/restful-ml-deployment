@@ -1,5 +1,5 @@
-from typing import List, Dict, Iterable
 import pickle as pkl
+from typing import List, Dict, Iterable
 
 import pandas as pd
 

@@ -9,9 +9,7 @@ import requests
 from dotenv import load_dotenv
 
 
-server = os.getenv("SERVER_IP", "127.0.0.1")
-port = 8000
-BASE_URL = f"http://{server}:{port}"
+BASE_URL = "http://localhost:8000"
 
 print("URL:", BASE_URL)
 print()

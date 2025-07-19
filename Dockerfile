@@ -19,4 +19,4 @@ COPY . /app
 # expose port 8000 inside the container
 EXPOSE 8000
 
-CMD ["python", "run_app.py"]
+CMD ["python", "run.py"]

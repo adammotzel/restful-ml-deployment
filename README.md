@@ -32,7 +32,7 @@ The project directory structure is as follows:
    ├── model.py            # defines the ModelWrapper class used in the app
    ├── openapi.py          # generates the docs/api_specs.yaml file
    ├── schemas.py          # defines the schemas/classes for endpoint inputs and outputs
-   └── app_setup.py        # instantiates / initializes objects used in app.py
+   └── config.py           # instantiates / initializes objects used in app.py
 └── tests/
    ├── __init__.py
    └── test_app.py         # tests the basic functionality of the app
@@ -126,9 +126,9 @@ By default, the app will not run out-of-the-box after cloning the repository bec
 
 1. **Train the Model**: Execute the entire `notebooks/train.ipynb` notebook. This will train and save a Logistic Regression model as a `pickle` file (`models/model.pkl`).
 
-2. **Run the App**: Once the `model.pkl` file is present, start the app by running the `run_app.py` script.
+2. **Run the App**: Once the `model.pkl` file is present, start the app by running the `run.py` script.
 
-   You can serve the app however you like. By default, it is served locally (when running `run_app.py`), but you can also expose the app to other devices in a private network:
+   You can serve the app however you like. By default, it is served locally (when running `run.py`), but you can also expose the app to other devices in a private network:
 
       - First ensure your machine is connected to the private, trusted network, like your home Wi-Fi. You can make your network "trusted" via your machine's network settings.
       - Set the `SERVER_IP` environment variable (and optionally `SERVER_PORT` for a custom port) to the private IP address assigned to your machine by your private network's router/DHCP server:
@@ -139,7 +139,7 @@ By default, the app will not run out-of-the-box after cloning the repository bec
          ```
 
       - Create an inbound firewall rule to allow incoming traffic to your app's port (e.g., `8000`). This may not be required for all machines.
-      - Run the `run_app.py` script; the app should now be accessible to other devices in your private network.
+      - Run the `run.py` script; the app should now be accessible to other devices in your private network.
 
       Serving the app on your private network helps simulate a 'production' environment without exposing the app to the public internet. Serving the app to the public internet is out-of-scope for this project.
 

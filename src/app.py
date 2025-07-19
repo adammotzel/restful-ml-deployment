@@ -1,5 +1,6 @@
 import traceback
 from datetime import datetime
+from contextlib import asynccontextmanager
 
 from fastapi import (
     FastAPI, 
@@ -20,24 +21,42 @@ from src.schemas import (
     UnauthorizedErrorResponse,
     ServerErrorResponse
 )
-from src.app_setup import (
+from src.config import (
     logger,
-    fitted_model,
+    model,
     data_client,
-    correct_username,
-    correct_password,
-    server,
-    port,
+    CORRECT_USERNAME,
+    CORRECT_PASSWORD,
+    HOST,
+    PORT,
     data_collection_executor
 )
 
 
-logger.info("Launching app...")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup / shutdown processes."""
+
+    # startup
+    logger.info("Launching app...")
+    logger.info(f"App running on http://{HOST}:{PORT}")
+    logger.info("Awaiting requests...")
+
+    yield
+
+    # shutdown
+    logger.info("Shutting down app...")
+    logger.info("Closing DataCollectionClient...")
+    data_client.close()
+    logger.info(f"DataCollectionClient closed successfully.")
+    logger.info("App shut down.")
+
 
 app = FastAPI(
     title="Logistic Regression Model",
     summary="Returns predicted probabilities.",
     version="1.0.0",
+    lifespan=lifespan
 )
 
 security = HTTPBasic()
@@ -61,7 +80,7 @@ def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
     Unauthorized error is raised.
     """
 
-    if credentials.username != correct_username or credentials.password != correct_password:
+    if credentials.username != CORRECT_USERNAME or credentials.password != CORRECT_PASSWORD:
         logger.error(f"User '{credentials.username}' cannot be authenticated.")
         logger.error("Response status: 401")
         raise HTTPException(
@@ -69,17 +88,6 @@ def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
             detail="Invalid credentials.",
             headers={"WWW-Authenticate": "Basic"},
         )
-    
-
-@app.on_event("shutdown")
-def shutdown_event():
-    """Safely shut down app."""
-
-    logger.info("Shutting down app...")
-    logger.info("Closing DataCollectionClient...")
-    data_client.close()
-    logger.info(f"DataCollectionClient closed successfully.")
-    logger.info("App shut down.")
 
 
 @app.exception_handler(RequestValidationError)
@@ -201,7 +209,7 @@ async def inference(
         # pass data to model
         logger.info("Passing payload to model...")
         data = payload.data.dict()
-        preds = fitted_model.predict(data)
+        preds = model.predict(data)
 
         # log request/response for monitoring
         logger.info("Capturing payload and model predictions...")
@@ -238,11 +246,3 @@ async def inference(
             status_code=500,
             detail="Internal server error occured."
         )
-
-
-# ---------- LOGGING ----------
-
-
-logger.info("App launched successfully.")
-logger.info(f"App running from server {server} on port {port}: http://{server}:{port}")
-logger.info("Awaiting requests...")
